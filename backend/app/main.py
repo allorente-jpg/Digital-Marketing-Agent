@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from . import crud, models
 from .database import SessionLocal, engine
-from .routers import auth, customers, invoices, workflows
+from .routers import auth, customers, invoices, workflows, agents
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -27,6 +27,7 @@ app.include_router(auth, prefix="/auth", tags=["auth"])
 app.include_router(customers, prefix="/customers", tags=["customers"])
 app.include_router(invoices, prefix="/invoices", tags=["invoices"])
 app.include_router(workflows, prefix="/workflows", tags=["workflows"])
+app.include_router(agents, prefix="/agents", tags=["agents"])
 
 
 def get_db():

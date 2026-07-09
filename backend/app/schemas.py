@@ -90,3 +90,24 @@ class Workflow(WorkflowBase):
 
     class Config:
         orm_mode = True
+
+
+class AgentBase(BaseModel):
+    name: str
+    agent_type: str
+    description: Optional[str] = None
+
+
+class AgentCreate(AgentBase):
+    pass
+
+
+class Agent(AgentBase):
+    id: int
+    owner_id: int
+    status: str
+    last_run_at: Optional[datetime] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

@@ -1,22 +1,31 @@
 import { useEffect, useState } from 'react';
-import { getCustomers, createCustomer, getInvoices, createInvoice, getWorkflows, createWorkflow } from './api';
+import {
+  getCustomers, createCustomer,
+  getInvoices, createInvoice,
+  getWorkflows, createWorkflow,
+  getAgents, createAgent, startAgent, stopAgent,
+} from './api';
 
 const emptyCustomer = { name: '', email: '', phone: '', notes: '' };
 const emptyInvoice = { customer_id: 0, amount: 0, due_date: '', description: '' };
 const emptyWorkflow = { name: '', description: '', trigger: 'invoice_due', action: 'send_email' };
+const emptyAgent = { name: '', agent_type: '', description: '' };
 
 function App() {
   const [customers, setCustomers] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [workflows, setWorkflows] = useState([]);
+  const [agents, setAgents] = useState([]);
   const [customerForm, setCustomerForm] = useState(emptyCustomer);
   const [invoiceForm, setInvoiceForm] = useState(emptyInvoice);
   const [workflowForm, setWorkflowForm] = useState(emptyWorkflow);
+  const [agentForm, setAgentForm] = useState(emptyAgent);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     async function load() {
       try {
+        setAgents(await getAgents());
         setCustomers(await getCustomers());
         setInvoices(await getInvoices());
         setWorkflows(await getWorkflows());
@@ -26,6 +35,39 @@ function App() {
     }
     load();
   }, []);
+
+  const upsertAgent = (updated) =>
+    setAgents((current) => current.map((a) => (a.id === updated.id ? updated : a)));
+
+  const handleAgentStart = async (id) => {
+    try {
+      upsertAgent(await startAgent(id));
+      setMessage('Agent started.');
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const handleAgentStop = async (id) => {
+    try {
+      upsertAgent(await stopAgent(id));
+      setMessage('Agent stopped.');
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const handleAgentSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const data = await createAgent(agentForm);
+      setAgents((current) => [...current, data]);
+      setAgentForm(emptyAgent);
+      setMessage('Agent created.');
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
 
   const handleCustomerSubmit = async (event) => {
     event.preventDefault();
@@ -71,6 +113,44 @@ function App() {
       </header>
 
       {message && <div className="message">{message}</div>}
+
+      <section className="panel">
+        <div className="panel-head">
+          <h2>Agents</h2>
+          <span className="muted">
+            {agents.filter((a) => a.status === 'running').length} of {agents.length} running
+          </span>
+        </div>
+        <div className="list">
+          {agents.length ? agents.map((agent) => (
+            <div key={agent.id} className="item agent-item">
+              <div className="agent-info">
+                <strong>{agent.name}</strong>
+                <span>{agent.description || 'No description'}</span>
+                <span className="muted">Type: {agent.agent_type}</span>
+              </div>
+              <div className="agent-controls">
+                <span className={`badge badge-${agent.status}`}>
+                  <span className="dot" />{agent.status}
+                </span>
+                {agent.status === 'running' ? (
+                  <button type="button" className="btn-sm btn-stop" onClick={() => handleAgentStop(agent.id)}>Stop</button>
+                ) : (
+                  <button type="button" className="btn-sm btn-start" onClick={() => handleAgentStart(agent.id)}>Start</button>
+                )}
+              </div>
+            </div>
+          )) : <p>No agents yet.</p>}
+        </div>
+        <form onSubmit={handleAgentSubmit} className="agent-form">
+          <div className="grid">
+            <input value={agentForm.name} placeholder="Agent name" onChange={(e) => setAgentForm({ ...agentForm, name: e.target.value })} required />
+            <input value={agentForm.agent_type} placeholder="Type (e.g. email, seo)" onChange={(e) => setAgentForm({ ...agentForm, agent_type: e.target.value })} required />
+            <input value={agentForm.description} placeholder="Description" onChange={(e) => setAgentForm({ ...agentForm, description: e.target.value })} />
+          </div>
+          <button type="submit">Add Agent</button>
+        </form>
+      </section>
 
       <section className="panel">
         <h2>Customers</h2>

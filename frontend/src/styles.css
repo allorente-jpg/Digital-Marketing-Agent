@@ -108,3 +108,95 @@ button:hover {
 .item span {
   color: #4b5563;
 }
+
+.muted {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-head h2 {
+  margin: 0;
+}
+
+.agent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.agent-info {
+  min-width: 0;
+}
+
+.agent-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge-running {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-stopped {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn-sm {
+  width: auto;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-start {
+  background: #16a34a;
+}
+
+.btn-start:hover {
+  background: #15803d;
+}
+
+.btn-stop {
+  background: #dc2626;
+}
+
+.btn-stop:hover {
+  background: #b91c1c;
+}
+
+.agent-form {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}

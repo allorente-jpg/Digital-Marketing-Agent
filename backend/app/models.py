@@ -18,6 +18,7 @@ class User(Base):
     customers = relationship("Customer", back_populates="owner")
     invoices = relationship("Invoice", back_populates="owner")
     workflows = relationship("Workflow", back_populates="owner")
+    agents = relationship("Agent", back_populates="owner")
 
 
 class Customer(Base):
@@ -64,3 +65,18 @@ class Workflow(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     owner = relationship("User", back_populates="workflows")
+
+
+class Agent(Base):
+    __tablename__ = "agents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    agent_type = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    status = Column(String, default="stopped", nullable=False)  # "running" | "stopped"
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    last_run_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="agents")

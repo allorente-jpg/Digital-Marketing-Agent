@@ -46,3 +46,22 @@ export async function createWorkflow(workflow) {
     body: JSON.stringify(workflow),
   });
 }
+
+export async function getAgents() {
+  return request('/agents/');
+}
+
+export async function createAgent(agent) {
+  return request('/agents/', {
+    method: 'POST',
+    body: JSON.stringify(agent),
+  });
+}
+
+export async function startAgent(id) {
+  return request(`/agents/${id}/start`, { method: 'POST' });
+}
+
+export async function stopAgent(id) {
+  return request(`/agents/${id}/stop`, { method: 'POST' });
+}

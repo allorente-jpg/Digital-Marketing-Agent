@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -65,3 +67,58 @@ def create_workflow(db: Session, workflow: schemas.WorkflowCreate, owner_id: int
 
 def get_workflows(db: Session, owner_id: int):
     return db.query(models.Workflow).filter(models.Workflow.owner_id == owner_id).all()
+
+
+# --- Agents ---
+
+DEFAULT_AGENTS = [
+    {"name": "Email Campaign Agent", "agent_type": "email",
+     "description": "Sends scheduled email campaigns to segmented client lists."},
+    {"name": "SEO Optimizer Agent", "agent_type": "seo",
+     "description": "Audits pages and applies on-page SEO recommendations."},
+    {"name": "Social Media Agent", "agent_type": "social",
+     "description": "Schedules and publishes posts across social channels."},
+    {"name": "Ad Bidding Agent", "agent_type": "ads",
+     "description": "Adjusts PPC bids based on live campaign performance."},
+    {"name": "Lead Nurture Agent", "agent_type": "crm",
+     "description": "Follows up with new leads via automated sequences."},
+]
+
+
+def seed_default_agents(db: Session, owner_id: int):
+    for agent in DEFAULT_AGENTS:
+        db.add(models.Agent(**agent, owner_id=owner_id, status="stopped"))
+    db.commit()
+
+
+def get_agents(db: Session, owner_id: int):
+    agents = db.query(models.Agent).filter(models.Agent.owner_id == owner_id).all()
+    if not agents:
+        seed_default_agents(db, owner_id)
+        agents = db.query(models.Agent).filter(models.Agent.owner_id == owner_id).all()
+    return agents
+
+
+def get_agent(db: Session, agent_id: int, owner_id: int):
+    return (
+        db.query(models.Agent)
+        .filter(models.Agent.id == agent_id, models.Agent.owner_id == owner_id)
+        .first()
+    )
+
+
+def create_agent(db: Session, agent: schemas.AgentCreate, owner_id: int):
+    db_agent = models.Agent(**agent.dict(), owner_id=owner_id, status="stopped")
+    db.add(db_agent)
+    db.commit()
+    db.refresh(db_agent)
+    return db_agent
+
+
+def set_agent_status(db: Session, agent: models.Agent, status: str):
+    agent.status = status
+    if status == "running":
+        agent.last_run_at = datetime.utcnow()
+    db.commit()
+    db.refresh(agent)
+    return agent
