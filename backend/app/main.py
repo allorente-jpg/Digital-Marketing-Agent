@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, models
@@ -8,9 +9,18 @@ from .routers import auth, customers, invoices, workflows
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Business Online Automation Hub",
-    description="A starter backend for SMB workflow automation and recurring revenue management.",
+    title="Digital Marketing Agent",
+    description="Backend for a digital marketing agency: clients, invoices, and marketing workflow automation.",
     version="0.1.0",
+)
+
+# Dev CORS: allow the Vite dev server (and any local origin) to call the API.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth, prefix="/auth", tags=["auth"])
@@ -29,7 +39,7 @@ def get_db():
 
 @app.get("/", summary="Health check")
 def root():
-    return {"status": "ok", "project": "Business Online Automation Hub"}
+    return {"status": "ok", "project": "Digital Marketing Agent"}
 
 
 @app.get("/health", summary="Application health")

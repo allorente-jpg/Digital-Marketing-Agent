@@ -16,7 +16,7 @@ from database import SessionLocal
 class BusinessDesktopApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Business Online Desktop Hub")
+        self.title("Digital Marketing Agent — Desktop")
         self.geometry("900x700")
         self.style = ttk.Style(self)
         self.style.theme_use("clam")

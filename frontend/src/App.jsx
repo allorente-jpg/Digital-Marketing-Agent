@@ -66,8 +66,8 @@ function App() {
   return (
     <div className="container">
       <header>
-        <h1>Business Online Automation Hub</h1>
-        <p>Start managing customers, invoices and workflows in one place.</p>
+        <h1>Digital Marketing Agent</h1>
+        <p>Manage clients, invoices and marketing workflows in one place.</p>
       </header>
 
       {message && <div className="message">{message}</div>}
