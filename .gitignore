@@ -9,3 +9,8 @@ venv/
 .venv/
 **/__pycache__/
 .DS_Store
+
+# Node / frontend build
+node_modules/
+dist/
+.vite/
